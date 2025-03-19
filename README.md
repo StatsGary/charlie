@@ -52,9 +52,8 @@ $$\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})$$
 $$\mathbf{I} = \text{FeatureImportance}(f_{RF})$$
 
 - Select the top-k features to improve training time and decrease dimensionality:
-$$
-\mathbf{X}_{\text{top}} = \mathbf{X}[:, \, \text{TopK}(\mathbf{I}, k)]
-$$
+
+$$\mathbf{X}_{\text{top}} = \mathbf{X}[:, \, \text{TopK}(\mathbf{I}, k)]$$
 
 - The Neural Network learns the mapping:
 
