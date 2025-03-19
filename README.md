@@ -99,7 +99,7 @@ $$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_{RF} + (1 - \alpha) \cdot \ha
 
 ## Mathematical Formulation Summary
 
-$$\hat{\mathbf{y}} = \alpha  \cdot \; f_\text{RF}(\mathbf{X}) + (1-\alpha)  \cdot  f_\text{NN}(\mathbf{X}_\text{top})$$
+$$\hat{\mathbf{y}} = \alpha\cdot f_\text{RF}(\mathbf{X})+(1-\alpha) \cdot f_\text{NN}(\mathbf{X}_\text{top})$$
 
 where:
 - $\alpha$ is trained alongside $\text{NN}$ parameters
