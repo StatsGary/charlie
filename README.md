@@ -45,10 +45,12 @@ Consists of two models:
 ### Mathematically 
 
 - Let $\mathbf{X} \in \mathbb{R}^{n \times d}$ be the input sample (n samples, d features)
-- Random Forest learns the mapping function: 
+- Random Forest learns the mapping function:
+  
 $$\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})$$
 
-- Using the feature importance vector: 
+- Using the feature importance vector:
+  
 $$\mathbf{I} = \text{FeatureImportance}(f_{RF})$$
 
 - Select the top-k features to improve training time and decrease dimensionality:
