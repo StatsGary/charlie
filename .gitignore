@@ -108,3 +108,5 @@ local_settings.py
 # Test artifacts
 *.log
 file.txt
+token.txt
+build_package.sh
