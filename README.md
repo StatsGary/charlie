@@ -33,8 +33,6 @@ The CHARLIE class implements a hybrid ML model that combines:
 - **Learnable weighting parameter** that blends predictions from both models
 
 
-
-
 ## Mode architecture
 
 Consists of two models: 
@@ -47,7 +45,8 @@ Consists of two models:
 - Let $\mathbf{X} \in \mathbb{R}^{n \times d}$ be the input sample (n samples, d features)
 - Random Forest learns the mapping function: 
 
-$$\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})$$
+
+$$\hat{\mathbf{y}}_{RF}=f_{RF}(\mathbf{X})$$
 
 - Using the feature importance vector: 
 
