@@ -1,8 +1,12 @@
 """"Tests for the CHARLIE model."""
 
+import os
 import pytest
 import numpy as np
 import torch
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from models.ensemble import CHARLIE
 
 @pytest.fixture
