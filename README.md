@@ -33,37 +33,13 @@ The CHARLIE class implements a hybrid ML model that combines:
 - **Learnable weighting parameter** that blends predictions from both models
 
 
-## Mode architecture
+## Model architecture
 
 Consists of two models: 
 
 - Random Forest trained on the entire feature set and outputs either class probs or continuous predictions. 
 - Neural Network - built after using a reduced features set based on RF feature importance
 
-### Mathematically 
-
-- Let $\mathbf{X} \in \mathbb{R}^{n \times d}$ be the input sample (n samples, d features)
-- Random Forest learns the mapping function: 
-
-$$\hat{\mathbf{y}}_{RF}=f_{RF}(\mathbf{X})$$
-
-- Using the feature importance vector:
-  
-$$\mathbf{I} = \text{FeatureImportance}(f_{RF})$$
-
-- Select the top-k features to improve training time and decrease dimensionality:
-
-$$\mathbf{X}_{\text{top}} = \mathbf{X}[:, \, \text{TopK}(\mathbf{I}, k)]$$
-
-- The Neural Network learns the mapping:
-
-$$\hat{\mathbf{y}}_{NN} = f_{NN}({X}_{top})$$
-
-- We blend the ensemble into a final output:
-
-$$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_{RF} + (1 - \alpha) \cdot \hat{\mathbf{y}}_{NN}$$
-
-- $\alpha$ is learnable and optimised during Neural Network training
 
 ## Training Process
 
