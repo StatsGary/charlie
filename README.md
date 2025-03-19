@@ -1,5 +1,7 @@
 # CHARLIE 
 
+![](fig/CHARLIE_logo.png)
+
 CHARLIE is an acronym that encapsulates the core process of this model. Standing for:
 
 - Combined: blending two modeling techniques (Random Forest & Neural Networks)
