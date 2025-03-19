@@ -49,9 +49,7 @@ Consists of two models:
 $$\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})$$
 
 - Using the feature importance vector: 
-$$
-\mathbf{I} = \text{FeatureImportance}(f_{RF})
-$$
+$$\mathbf{I} = \text{FeatureImportance}(f_{RF})$$
 
 - Select the top-k features to improve training time and decrease dimensionality:
 $$
