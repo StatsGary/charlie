@@ -46,31 +46,24 @@ Consists of two models:
 
 - Let $\mathbf{X} \in \mathbb{R}^{n \times d}$ be the input sample (n samples, d features)
 - Random Forest learns the mapping function: 
-$$
-\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})
-$$
+
+$$\hat{\mathbf{y}}_{RF} = f_{RF}(\mathbf{X})$$
 
 - Using the feature importance vector: 
-$$
-\mathbf{I} = \text{FeatureImportance}(f_{RF})
-$$
+
+$$\mathbf{I} = \text{FeatureImportance}(f_{RF})$$
 
 - Select the top-k features to improve training time and decrease dimensionality:
-$$
-\mathbf{X}_{\text{top}} = \mathbf{X}[:, \, \text{TopK}(\mathbf{I}, k)]
-$$
+
+$$\mathbf{X}_{\text{top}} = \mathbf{X}[:, \, \text{TopK}(\mathbf{I}, k)]$$
 
 - The Neural Network learns the mapping:
 
-$$
-\hat{\mathbf{y}}_{NN} = f_{NN}({X}_{top}) 
-$$
+$$\hat{\mathbf{y}}_{NN} = f_{NN}({X}_{top})$$
 
 - We blend the ensemble into a final output:
 
-$$
-\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_{RF} + (1 - \alpha) \cdot \hat{\mathbf{y}}_{NN}
-$$
+$$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_{RF} + (1 - \alpha) \cdot \hat{\mathbf{y}}_{NN}$$
 
 - $\alpha$ is learnable and optimised during Neural Network training
 
@@ -116,15 +109,11 @@ $$\mathbf{X}_\text{top} = \mathbf{X}[:\text{TopK}(\mathbf{I},k)]$$
 
 3. Neural Network prediction:
 
-$$
-\hat{\mathbf{y}}_\text{NN} = f_\text{NN}(\mathbf{X}\text(top))
-$$
+$$\hat{\mathbf{y}}_\text{NN} = f_\text{NN}(\mathbf{X}\text(top))$$
 
 4. The blended output:
 
-$$
-\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_\text{RF} + (1-\alpha) \;\cdot \hat{\mathbf{y}}_\text{NN}
-$$
+$$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_\text{RF} + (1-\alpha) \;\cdot \hat{\mathbf{y}}_\text{NN}$$
 
 ## Prediction (`predict`) method
 
@@ -132,9 +121,7 @@ Runs a forward pass (without gradient computation) on the input data, outputting
 
 ## Mathematical Formulation Summary
 
-$$
-\hat{\mathbf{y}} = \alpha \; \cdot \; f_\text{RF}(\mathbf{X}) + (1-\alpha) \; \cdot \; f_\text{NN}(\mathbf{X}_\text{top})
-$$
+$$\hat{\mathbf{y}} = \alpha \; \cdot \; f_\text{RF}(\mathbf{X}) + (1-\alpha) \; \cdot \; f_\text{NN}(\mathbf{X}_\text{top})$$
 
 where:
 - $\alpha$ is trained alongside $\text{NN}$ parameters
