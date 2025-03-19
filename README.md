@@ -1,4 +1,4 @@
-# CHARLIE 
+# CHARLIE (Combined Alpha-weighted Random Forest Layered Inference Ensemble)
 
 ![](fig/CHARLIE_logo.png)
 
@@ -25,7 +25,6 @@ This will get the project from PyPi: <some url> and then you can import the mode
 ```python
 from charlie.models.ensemble import CHARLIE
 ```
-
 
 ## Overview
 
