@@ -77,7 +77,6 @@ $$\hat{\mathbf{y}} = \alpha\cdot f_\text{RF}(\mathbf{X})+(1-\alpha) \cdot f_\tex
 where:
 - $\alpha$ is trained alongside $\text{NN}$ parameters
 - $f_\text{RF}$ is trained first
-- $\mathbf{X}_\text{top}$ is based on top feature selection via $f_\text{RF}$
 
 ## How to use CHARLIE? 
 
