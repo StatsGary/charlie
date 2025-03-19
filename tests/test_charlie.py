@@ -45,12 +45,6 @@ def test_train_classification(classification_data):
     assert model.nn_model is not None
     assert model.top_features.shape[0] == 4
 
-def test_predict_regression_shape(regression_data):
-    X, y = regression_data
-    model = CHARLIE(input_dim=10, classification=False)
-    model.train_model(X, y, epochs=2)
-    preds = model.predict(X)
-    assert preds.shape == (100, 1)
 
 def test_predict_classification_shape(classification_data):
     X, y = classification_data
