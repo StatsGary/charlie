@@ -49,6 +49,7 @@ Consists of two models:
 
 - Random Forest learns the mapping function:
 
+
 $$\hat{\mathbf{y}}_{RF}=f_{RF}(\mathbf{X})$$
 
 - Using the feature importance vector:
