@@ -43,10 +43,7 @@ Consists of two models:
 ### Mathematically 
 
 - Let $\mathbf{X} \in \mathbb{R}^{n \times d}$ be the input sample (n samples, d features)
-- Random Forest learns the mapping function: 
-
-
-$$\hat{\mathbf{y}}_{RF}=f_{RF}(\mathbf{X})$$
+- Random Forest learns the mapping function: $\hat{\mathbf{y}}_{RF}=f_{RF}(\mathbf{X})$
 
 - Using the feature importance vector: 
 
