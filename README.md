@@ -97,30 +97,6 @@ $$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_{RF} + (1 - \alpha) \cdot \ha
     - Blending parameter $\alpha$
 
 
-## Forward Pass (`forward`) method
-
-Given input $X$ we get:
-
-1. Random Forest prediction:
-
-$$\hat{\mathbf{y}}_\text{RF} = f _\text{RF} (\mathbf{X})$$
-
-2. Feature slicing:
-
-$$\mathbf{X}_\text{top} = \mathbf{X}[:\text{TopK}(\mathbf{I},k)]$$
-
-3. Neural Network prediction:
-
-$$\hat{\mathbf{y}}_\text{NN} = f_\text{NN}(\mathbf{X}\text(top))$$
-
-4. The blended output:
-
-$$\hat{\mathbf{y}} = \alpha \cdot \hat{\mathbf{y}}_\text{RF} + (1-\alpha) \;\cdot \hat{\mathbf{y}}_\text{NN}$$
-
-## Prediction (`predict`) method
-
-Runs a forward pass (without gradient computation) on the input data, outputting the blended result. 
-
 ## Mathematical Formulation Summary
 
 $$\hat{\mathbf{y}} = \alpha \; \cdot \; f_\text{RF}(\mathbf{X}) + (1-\alpha) \; \cdot \; f_\text{NN}(\mathbf{X}_\text{top})$$
