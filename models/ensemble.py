@@ -83,7 +83,7 @@ class CHARLIE(nn.Module):
         if self.classification:
             rf_preds = self.rf.predict_proba(x_cpu)
         else:
-            rf_preds = self.rf.predict(x_cpu).reshape(-1, 1)  # <-- Fix: make shape (n_samples, 1)
+            rf_preds = self.rf.predict(x_cpu).reshape(-1, 1) 
 
         rf_tensor = torch.tensor(rf_preds, dtype=torch.float32, device=self.device)
 
