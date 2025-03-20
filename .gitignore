@@ -110,3 +110,4 @@ local_settings.py
 file.txt
 token.txt
 build_package.sh
+run_charlie.py
