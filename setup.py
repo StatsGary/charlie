@@ -20,7 +20,7 @@ def read_requirements():
         return [line.strip() for line in f if line.strip() and not line.startswith("#")]
 
 setup(
-    name="charlie",
+    name="charliepy",
     version=get_version(),
     author="Gary Hutson",
     author_email="hutsons-hacks@outlook.com",

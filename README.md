@@ -1,6 +1,6 @@
 # CHARLIE (Combined Alpha-weighted Random Forest Layered Inference Ensemble)
 
-![](fig/CHARLIE_logo.png)
+![](https://github.com/StatsGary/charlie/blob/main/fig/CHARLIE_logo.png)
 
 ![GitHub Actions](https://github.com/StatsGary/charlie/actions/workflows/python-package.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/charlie.svg)](https://pypi.org/project/charlie/)
@@ -25,7 +25,7 @@ Why it is really called CHARLIE? I am sure only my son knows that ❤️.
 To import the package we go to the below:
 
 ```bash
-pip install charlie
+pip install charliepy
 ```
 This will get the project from PyPi: <some url> and then you can import the model using:
 
@@ -101,7 +101,7 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
-from charlie.models.ensemble import CHARLIE
+from charliePy.models.ensemble import CHARLIE
 ```
 ### Preprocess data
 
@@ -240,6 +240,6 @@ plt.show()
 
 This produces the visualisation illustrated below:
 
-![](fig/CHARLIE.png)
+![](https://github.com/StatsGary/charlie/blob/main/fig/CHARLIE.png)
 
 Due to combining our feature selector with a neural network, we can beat the standard Random Forest classifier on its own, as well as XGBoost, which shows the power of this approach, as `accuracy=0.9` and `F1-Score=0.869`.
