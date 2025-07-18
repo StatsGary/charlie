@@ -101,7 +101,7 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
-from charliePy.models.ensemble import CHARLIE
+from charlie.models.ensemble import CHARLIE
 ```
 ### Preprocess data
 
