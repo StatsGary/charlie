@@ -93,7 +93,9 @@ class CHARLIE(nn.Module):
         """Structuring the NN and hidden layers for the neural network"""
         layers = []
         layer_dims = [self.selected_features] + list(self.hidden_layers)
-        logging.info(layer_dims)
+        if self.logging_enabled:
+            logging.info(layer_dims)
+        
 
         for i in range(len(layer_dims) - 1):
             layers.append(nn.Linear(layer_dims[i], layer_dims[i + 1]))
