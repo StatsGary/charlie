@@ -1,6 +1,6 @@
 # CHARLIE (Combined Alpha-weighted Random Forest Layered Inference Ensemble)
 
-![](fig/CHARLIE_logo.png)
+![](https://github.com/StatsGary/charlie/blob/ab298651818191a6a8436c0f9e6b270c7236bc68/fig/CHARLIE_logo.png)
 
 ![GitHub Actions](https://github.com/StatsGary/charlie/actions/workflows/python-package.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/charlie.svg)](https://pypi.org/project/charlie/)
@@ -240,7 +240,7 @@ plt.show()
 
 This produces the visualisation illustrated below:
 
-![](fig/CHARLIE.png)
+![](https://github.com/StatsGary/charlie/blob/ab298651818191a6a8436c0f9e6b270c7236bc68/fig/CHARLIE.png)
 
 Due to combining our feature selector with a neural network, we can beat the standard Random Forest classifier on its own, as well as XGBoost, which shows the power of this approach, as `accuracy=0.9` and `F1-Score=0.869`.
 
