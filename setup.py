@@ -5,11 +5,11 @@ import chardet
 
 def get_version():
     """Gets the current version of the package"""
-    with open("models/__init__.py", "r", encoding='utf-8-sig') as f:
+    with open("charlie/__init__.py", "r", encoding='utf-8-sig') as f:
         version_line = next((line for line in f if line.startswith("__version__")), None)
         if version_line:
             return re.search(r"\"(.*?)\"", version_line).group(1)
-        raise RuntimeError("Version not found in models/__init__.py")
+        raise RuntimeError("Version not found in charlie/__init__.py")
 
 def read_requirements():
     """Read dependencies from requirements.txt"""

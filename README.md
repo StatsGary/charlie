@@ -244,6 +244,137 @@ This produces the visualisation illustrated below:
 
 Due to combining our feature selector with a neural network, we can beat the standard Random Forest classifier on its own, as well as XGBoost, which shows the power of this approach, as `accuracy=0.9` and `F1-Score=0.869`.
 
+
+## Cross-Validation with MultiModelCrossValidator
+
+The `MultiModelCrossValidator` is a utility for performing cross-validation on multiple models with custom hyperparameters. It supports various metrics, robust error handling, and flexible progress modes.
+
+### Usage Example
+
+```python
+from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+
+data = load_breast_cancer()
+X, y = data.data, data.target
+
+models = [
+    ("RandomForest", RandomForestClassifier, {"n_estimators": 100}),
+    ("GradientBoosting", GradientBoostingClassifier, {"n_estimators": 200})
+]
+
+validator = MultiModelCrossValidator(
+    models=models,
+    score_fn=roc_auc_score,
+    higher_is_better=True,
+    cv_splits=5,
+    use_tqdm=True,
+    progress_mode="model",
+    threshold=0.4   # custom threshold for label-based metrics
+)
+
+results = validator.cross_validate(X, y)
+print("Best model:", validator.best_model_info)
+predictions = validator.predict_proba(X[:5])
+```
+## Ensembling Methods in CHARLIE
+
+The CHARLIE package provides several ensembling methods to combine predictions from multiple models. These methods can improve the robustness and accuracy of predictions by leveraging the strengths of different models.
+
+### Example Usage
+
+Below are examples of how to use the ensembling methods available in `charlie.utils`.
+
+#### Weighted Ensemble
+
+```python
+import numpy as np
+from charlie.utils import weighted_ensemble
+
+probs1 = np.array([[0.7, 0.3], [0.4, 0.6]])
+probs2 = np.array([[0.6, 0.4], [0.5, 0.5]])
+ensemble_probs = weighted_ensemble([probs1, probs2], weights=[0.8, 0.2])
+print(ensemble_probs)
+```
+
+#### Mean Ensemble
+
+```python
+from charlie.utils import mean_ensemble
+
+probs1 = np.array([[0.7, 0.3], [0.4, 0.6]])
+probs2 = np.array([[0.6, 0.4], [0.5, 0.5]])
+ensemble_probs = mean_ensemble([probs1, probs2])
+print(ensemble_probs)
+```
+
+#### Median Ensemble
+
+```python
+from charlie.utils import median_ensemble
+
+probs1 = np.array([[0.7, 0.3], [0.4, 0.6]])
+probs2 = np.array([[0.6, 0.4], [0.5, 0.5]])
+probs3 = np.array([[0.9, 0.1], [0.2, 0.8]])
+ensemble_probs = median_ensemble([probs1, probs2, probs3])
+print(ensemble_probs)
+```
+
+#### Max Ensemble
+
+```python
+from charlie.utils import max_ensemble
+
+probs1 = np.array([[0.7, 0.3], [0.4, 0.6]])
+probs2 = np.array([[0.6, 0.4], [0.5, 0.5]])
+ensemble_probs = max_ensemble([probs1, probs2])
+print(ensemble_probs)
+```
+
+#### Rank Ensemble
+
+```python
+from charlie.utils import rank_ensemble
+
+probs1 = np.array([[0.7, 0.3], [0.4, 0.6]])
+probs2 = np.array([[0.6, 0.4], [0.5, 0.5]])
+ensemble_probs = rank_ensemble([probs1, probs2])
+print(ensemble_probs)
+```
+
+These examples demonstrate how to use the ensembling functions provided by CHARLIE to combine model predictions effectively.
+## Feature Selection with CharlieRFECV
+
+The `CharlieRFECV` class can be used to perform recursive feature elimination with cross-validation to select the most important features for your model.
+
+```python
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.ensemble import RandomForestClassifier
+from charlie.feature_selection.rfecv import CharlieRFECV
+
+# Load dataset
+data = load_iris()
+X, y = data.data, data.target
+
+# Initialize the estimator
+estimator = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# Initialize CharlieRFECV
+rfecv = CharlieRFECV(estimator=estimator, step=1, cv=5, scoring=None, min_features_to_select=1, verbose=1)
+
+# Fit the model
+rfecv.fit(X, y)
+
+# Transform the dataset
+X_transformed = rfecv.transform(X)
+
+# Print the best score and selected features
+print(f"Best CV Score: {rfecv.best_score_}")
+print(f"Selected Features: {np.where(rfecv.best_support_)[0]}")
+```
+
 ## Performance on regression credit modelling 
 
 This was contributed by https://www.linkedin.com/in/venkateshwari-narayanan-668661176/. 

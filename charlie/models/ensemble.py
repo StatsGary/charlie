@@ -141,7 +141,8 @@ class CHARLIE(nn.Module):
         self.rf.fit(train_features, train_targets)
         feature_importance = self.rf.feature_importances_
         self.top_features = np.argsort(feature_importance)[::-1][:self.selected_features].copy()
-        if len(self.top_features) == 0:
+
+        if np.all(feature_importance == 0):
             logging.error("No valid features selected by Random Forest.")
             raise ValueError("No valid features selected by Random Forest.")
 
