@@ -130,8 +130,16 @@ class MultiModelCrossValidator:
             for fold_idx in fold_iterator:
                 try:
                     train_idx, val_idx = list(skf.split(X, y))[fold_idx]
-                    X_train, X_val = X[train_idx], X[val_idx]
-                    y_train, y_val = y[train_idx], y[val_idx]
+
+                    if hasattr(X, "iloc"):
+                        X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
+                    else:
+                        X_train, X_val = X[train_idx], X[val_idx]
+
+                    if hasattr(y, "iloc"):
+                        y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+                    else: 
+                        y_train, y_val = y[train_idx], y[val_idx]
 
                     model = model_class(random_state=self.random_state, **params)
                     model.fit(X_train, y_train)
