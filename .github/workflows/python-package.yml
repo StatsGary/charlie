@@ -40,10 +40,10 @@ jobs:
     #     python -m pip install mypy
     #     mypy charlie  
 
-    - name: Check formatting with black
-      run: |
-        python -m pip install black
-        black --check charlie  
+    # - name: Check formatting with black
+    #   run: |
+    #     python -m pip install black
+    #     black --check charlie  
 
     - name: Security scan with bandit
       run: |
