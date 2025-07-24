@@ -6,6 +6,10 @@ from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from charlie.feature_selection.rfecv import CharlieRFECV
 
+# --- Additional imports for new tests ---
+from sklearn.linear_model import LogisticRegression
+from sklearn.dummy import DummyClassifier
+from sklearn.model_selection import KFold
 
 @pytest.fixture
 def small_dataset():
@@ -137,3 +141,84 @@ def test_fit_transform_matches_transform(small_dataset, charlie_rfecv_instance):
 
     # Assert that both methods give the same result
     assert np.allclose(X_fit_trans, X_trans)
+
+# =============== ADDITIONAL COVERAGE TESTS ================
+
+def test_fit_with_linear_model(small_dataset):
+    """
+    Test CharlieRFECV with a linear model that uses 'coef_' attribute.
+    """
+    X, y = small_dataset
+    selector = CharlieRFECV(
+        estimator=LogisticRegression(solver='liblinear', random_state=42),
+        step=1, min_features_to_select=2, verbose=0
+    )
+    selector.fit(X, y)
+    assert hasattr(selector, "best_support_")
+    assert hasattr(selector, "best_score_")
+
+def test_fit_with_dummy_model(small_dataset):
+    """
+    Test CharlieRFECV with a model that lacks 'feature_importances_' and 'coef_'.
+    Should use random importances fallback.
+    """
+    X, y = small_dataset
+    selector = CharlieRFECV(
+        estimator=DummyClassifier(strategy='uniform', random_state=42),
+        step=1, min_features_to_select=2, verbose=0
+    )
+    selector.fit(X, y)
+    assert hasattr(selector, "best_support_")
+    assert hasattr(selector, "best_score_")
+
+def test_custom_scoring_function(small_dataset):
+    """
+    Test CharlieRFECV with a custom scoring function (accuracy).
+    """
+    X, y = small_dataset
+    def accuracy(y_true, y_pred):
+        return np.mean((y_pred > 0.5) == y_true)
+    selector = CharlieRFECV(
+        estimator=RandomForestClassifier(n_estimators=5, random_state=42),
+        step=1, min_features_to_select=2, scoring=accuracy, verbose=0
+    )
+    selector.fit(X, y)
+    assert hasattr(selector, "best_support_")
+    assert hasattr(selector, "best_score_")
+
+def test_min_features_to_select_greater_than_n_features(small_dataset):
+    """
+    Test error raised if min_features_to_select > number of features.
+    """
+    X, y = small_dataset
+    selector = CharlieRFECV(
+        estimator=RandomForestClassifier(n_estimators=5, random_state=42),
+        step=1, min_features_to_select=X.shape[1]+1, verbose=0
+    )
+    with pytest.raises(Exception):
+        selector.fit(X, y)
+
+def test_custom_cv_object(small_dataset):
+    """
+    Test using a custom cross-validation object (KFold instead of StratifiedKFold).
+    """
+    X, y = small_dataset
+    selector = CharlieRFECV(
+        estimator=RandomForestClassifier(n_estimators=5, random_state=42),
+        step=1, min_features_to_select=2, cv=KFold(n_splits=3), verbose=0
+    )
+    selector.fit(X, y)
+    assert hasattr(selector, "best_support_")
+
+def test_verbose_prints_score(small_dataset, capsys):
+    """
+    Test that verbose mode prints score progress to stdout.
+    """
+    X, y = small_dataset
+    selector = CharlieRFECV(
+        estimator=RandomForestClassifier(n_estimators=5, random_state=42),
+        step=1, min_features_to_select=2, verbose=1
+    )
+    selector.fit(X, y)
+    captured = capsys.readouterr()
+    assert "Features:" in captured.out

@@ -128,6 +128,13 @@ class CharlieRFECV:
     def fit(self, X: np.ndarray, y: np.ndarray) -> 'CharlieRFECV':
         X = np.asarray(X)
         n_features = X.shape[1]
+
+        if self.min_features_to_select > n_features:
+            raise ValueError(
+                f"min_features_to_select={self.min_features_to_select} is greater than "
+                f"the number of features in X ({n_features})"
+            )
+
         support = np.ones(n_features, dtype=bool)
         self.history_: List[dict] = []
         feature_indices = np.arange(n_features)
