@@ -3,6 +3,8 @@
 ![](https://github.com/StatsGary/charlie/blob/ab298651818191a6a8436c0f9e6b270c7236bc68/fig/CHARLIE_logo.png)
 
 ![GitHub Actions](https://github.com/StatsGary/charlie/actions/workflows/python-package.yml/badge.svg)
+[![codecov](https://codecov.io/gh/StatsGary/charlie/branch/main/graph/badge.svg)](https://codecov.io/gh/StatsGary/charlie)
+
 [![PyPI version](https://badge.fury.io/py/charlie.svg)](https://pypi.org/project/charliepy/)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
