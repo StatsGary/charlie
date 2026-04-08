@@ -346,6 +346,7 @@ print(ensemble_probs)
 ```
 
 These examples demonstrate how to use the ensembling functions provided by CHARLIE to combine model predictions effectively.
+
 ## Feature Selection with CharlieRFECV
 
 The `CharlieRFECV` class can be used to perform recursive feature elimination with cross-validation to select the most important features for your model.
@@ -408,3 +409,130 @@ The CHARLIE Model’s exceptional performance makes it well-suited for:
 
 - Datasets where high accuracy and consistency are critical.
 
+## Forecasting with `charlie_foresight`
+CHARLIE Foresight is a robust, end-to-end time-series forecasting framework designed for real-world production use.
+
+Most forecasting libraries stop at model fitting.
+
+CHARLIE Foresight goes further by providing:
+
+- automated model comparison
+- statistically sound ensemble weighting
+- a clear separation between training, production inference, and exploratory forecasting
+- strong defaults that prevent silent forecasting errors
+
+It is designed for:
+
+- supply-chain and demand forecasting
+- operational planning
+- finance and capacity modelling
+- regulated or risk-sensitive environments
+
+It has an easy wrapper and will ensemble the best fitting model available. Let's use the flights forecast data to get started/
+
+### Load and prepare flight passenger data
+
+We will prepare the data for the forecast model and use the famous flight passnger dataset:
+
+```python
+import pandas as pd
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv"
+# Create the data frame
+df = pd.read_csv(url)
+df["Month"] = pd.to_datetime(df["Month"])
+df.set_index("Month", inplace=True)
+# Convert to series
+series = df["Passengers"]
+series.name = "y"
+series = series.asfreq("MS") 
+```
+
+The next step is to use the forecast ensembler to train a forecast model:
+
+### Train the forecast ensembler
+
+In this step, we will train the forecast ensembler:
+
+```python
+from charlie.charlie_foresight.forecast_runner import run_forecast
+
+result = run_forecast(
+    series=series,
+    horizon=12,   
+)
+
+print("Selected models:", list(result["models"].keys()))
+print("Ensemble weights:", result["ensemble_weights"])
+
+```
+ Here we specify the time horizon, there are many other inputs, to find out how to use them do `help(charle.charlie_foresight.forecast_runner)`.
+
+ When the forecast has ran, we can expose a plot and the model results and weights, to get a plot you do this: 
+
+ ```python
+ result['plot']()
+ ```
+
+ This will generate a plot, similar to hereunder:
+
+![](fig/forecast.png)
+
+### Forecast on unseen data in production
+
+To then forecast on unseen data, you would take a future time series to make your estimates, for the sake of example, we are using the same series as before:
+
+```python
+from charlie.charlie_foresight.inference import forecast_unseen
+
+direct = forecast_unseen(
+    series=series,
+    horizon=12,
+    models=result["models"],
+    weights=result["ensemble_weights"],
+    preprocessor=result["preprocessor"],
+)
+
+direct_series = pd.Series(
+    direct["forecast"],
+    index=direct["future_index"],
+    name="direct_forecast",
+)
+
+```
+
+This uses the models from the fitted model, the ensemble weights and the preprocessors used, to fit this to new unseen data. 
+
+### Recursive forecasting for 'what if' and scenario analysis
+
+To estimate what would happen way into the future, you can create scenario blocks: 
+
+```python 
+from charlie.charlie_foresight.inference import forecast_recursive
+
+recursive_series = forecast_recursive(
+    series=series,
+    steps=24,     
+    block=12,      
+    models=result["models"],
+    weights=result["ensemble_weights"],
+    preprocessor=result["preprocessor"],
+)
+```
+
+To visualise the block, you can create a similar plot to the one exposed in the fitting method:
+
+```python
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12, 6))
+plt.plot(series, label="Historical")
+plt.plot(direct_series, "--", label="Direct (12-step)")
+plt.plot(recursive_series, "--", label="Recursive (24-step)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+
+This produces an estimation way into the future to assess what may happen for planning: 
+
+![](fig/recursive.png)
