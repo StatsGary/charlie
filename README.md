@@ -346,6 +346,7 @@ print(ensemble_probs)
 ```
 
 These examples demonstrate how to use the ensembling functions provided by CHARLIE to combine model predictions effectively.
+
 ## Feature Selection with CharlieRFECV
 
 The `CharlieRFECV` class can be used to perform recursive feature elimination with cross-validation to select the most important features for your model.
@@ -408,3 +409,303 @@ The CHARLIE Model’s exceptional performance makes it well-suited for:
 
 - Datasets where high accuracy and consistency are critical.
 
+## Forecasting with `charlie_foresight`
+CHARLIE Foresight is a robust, end-to-end time-series forecasting framework designed for real-world production use.
+
+Most forecasting libraries stop at model fitting.
+
+CHARLIE Foresight goes further by providing:
+
+- automated model comparison
+- statistically sound ensemble weighting
+- a clear separation between training, production inference, and exploratory forecasting
+- strong defaults that prevent silent forecasting errors
+
+It is designed for:
+
+- supply-chain and demand forecasting
+- operational planning
+- finance and capacity modelling
+- regulated or risk-sensitive environments
+
+It has an easy wrapper and will ensemble the best fitting model available. Let's use the flights forecast data to get started/
+
+### Load and prepare flight passenger data
+
+We will prepare the data for the forecast model and use the famous flight passnger dataset:
+
+```python
+import pandas as pd
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv"
+# Create the data frame
+df = pd.read_csv(url)
+df["Month"] = pd.to_datetime(df["Month"])
+df.set_index("Month", inplace=True)
+# Convert to series
+series = df["Passengers"]
+series.name = "y"
+series = series.asfreq("MS") 
+```
+
+The next step is to use the forecast ensembler to train a forecast model:
+
+### Train the forecast ensembler
+
+In this step, we will train the forecast ensembler:
+
+```python
+from charlie.charlie_foresight.forecast_runner import run_forecast
+
+result = run_forecast(
+    series=series,
+    horizon=12,   
+)
+
+print("Selected models:", list(result["models"].keys()))
+print("Ensemble weights:", result["ensemble_weights"])
+
+```
+ Here we specify the time horizon, there are many other inputs, to find out how to use them do `help(charle.charlie_foresight.forecast_runner)`.
+
+ When the forecast has ran, we can expose a plot and the model results and weights, to get a plot you do this: 
+
+ ```python
+ result['plot']()
+ ```
+
+ This will generate a plot, similar to hereunder:
+
+![](fig/forecast.png)
+
+### Forecast on unseen data in production
+
+To then forecast on unseen data, you would take a future time series to make your estimates, for the sake of example, we are using the same series as before:
+
+```python
+from charlie.charlie_foresight.inference import forecast_unseen
+
+direct = forecast_unseen(
+    series=series,
+    horizon=12,
+    models=result["models"],
+    weights=result["ensemble_weights"],
+    preprocessor=result["preprocessor"],
+)
+
+direct_series = pd.Series(
+    direct["forecast"],
+    index=direct["future_index"],
+    name="direct_forecast",
+)
+
+```
+
+This uses the models from the fitted model, the ensemble weights and the preprocessors used, to fit this to new unseen data. 
+
+### Recursive forecasting for 'what if' and scenario analysis
+
+To estimate what would happen way into the future, you can create scenario blocks: 
+
+```python 
+from charlie.charlie_foresight.inference import forecast_recursive
+
+recursive_series = forecast_recursive(
+    series=series,
+    steps=24,     
+    block=12,      
+    models=result["models"],
+    weights=result["ensemble_weights"],
+    preprocessor=result["preprocessor"],
+)
+```
+
+To visualise the block, you can create a similar plot to the one exposed in the fitting method:
+
+```python
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12, 6))
+plt.plot(series, label="Historical")
+plt.plot(direct_series, "--", label="Direct (12-step)")
+plt.plot(recursive_series, "--", label="Recursive (24-step)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+
+This produces an estimation way into the future to assess what may happen for planning: 
+
+![](fig/recursive.png)
+
+### Custom model selection using relative CV error
+
+You can plug in the built-in selector to keep only models whose mean CV error is within a threshold of the best model.
+
+```python
+from charlie.charlie_foresight.forecast_runner import (
+    run_forecast,
+    select_models_by_relative_error,
+)
+
+result = run_forecast(
+    series=series,
+    horizon=12,
+    model_selector=lambda cv_results: select_models_by_relative_error(
+        cv_results,
+        max_relative_error=1.25,
+    ),
+)
+
+print("Final models:", list(result["ensemble_weights"].keys()))
+```
+
+### Time index helpers
+
+Use time-index utilities directly when building custom pipelines.
+
+```python
+from charlie.charlie_foresight.time_index import infer_seasonal_period, make_future_index
+
+seasonal_period = infer_seasonal_period(series.index)
+future_index = make_future_index(series.index, horizon=6)
+
+print("Seasonal period:", seasonal_period)
+print(future_index)
+```
+
+### Series transforms and preprocessing
+
+The preprocessor supports interpolation, imputation, scaling, and optional series transforms.
+
+```python
+from charlie.charlie_foresight.transforms import SeriesTransformer
+from charlie.charlie_foresight.preprocessors import TimePreprocessor
+
+df_target = series.to_frame("target")
+
+transformer = SeriesTransformer(
+    transform="log",
+    force_series_type="multiplicative",
+)
+
+preprocessor = TimePreprocessor(
+    scaler_type="robust",
+    transformer=transformer,
+)
+
+df_scaled = preprocessor.fit_transform(df_target)
+df_rescaled = preprocessor.inverse_transform(df_scaled["target"])
+
+print(df_scaled.head())
+print(df_rescaled[:5])
+```
+
+### Manual cross-validation and ensembling
+
+If you need full control, you can evaluate models and fit weights manually.
+
+```python
+from charlie.charlie_foresight.cv import CrossValidator
+from charlie.charlie_foresight.ensemble import Ensembler
+from charlie.charlie_foresight.forecast_models.sarimax import SeasonalARIMAModel
+from charlie.charlie_foresight.forecast_models.ets import ETSModel
+
+df_target = series.to_frame("target")
+
+models = {
+    "sarimax": SeasonalARIMAModel(seasonal_period=12),
+    "ets": ETSModel(seasonal_periods=12),
+}
+
+cv = CrossValidator(n_splits=3)
+cv_results = cv.evaluate(df_target, models)
+
+ensembler = Ensembler()
+ensembler.fit(cv_results)
+
+print("Learned weights:", ensembler.weights)
+```
+
+### Evaluate CV metrics and ensemble metrics
+
+```python
+from charlie.charlie_foresight.evaluation import (
+    summarise_cv_metrics,
+    compute_ensemble_cv_metrics,
+)
+
+model_metrics = summarise_cv_metrics(cv_results)
+ensemble_metrics = compute_ensemble_cv_metrics(cv_results, ensembler.weights)
+
+print(model_metrics)
+print(ensemble_metrics)
+```
+
+### Forecast model classes directly
+
+You can use each model class independently outside the wrapper.
+
+```python
+import pandas as pd
+
+from charlie.charlie_foresight.time_index import make_future_index
+from charlie.charlie_foresight.forecast_models.sarimax import SeasonalARIMAModel
+from charlie.charlie_foresight.forecast_models.ets import ETSModel
+
+train_df = series.to_frame("target")
+future_df = pd.DataFrame(index=make_future_index(series.index, horizon=6))
+
+sarimax_model = SeasonalARIMAModel(
+    seasonal_period=12,
+    optuna_kwargs={"n_trials": 5},
+)
+sarimax_model.fit(train_df)
+sarimax_pred, sarimax_lo, sarimax_hi = sarimax_model.predict(future_df)
+
+ets_model = ETSModel(seasonal_periods=12)
+ets_model.fit(train_df)
+ets_pred, ets_lo, ets_hi = ets_model.predict(future_df)
+
+print(sarimax_pred[:3])
+print(ets_pred[:3])
+```
+
+### Prophet model example (optional dependency)
+
+`prophet` is optional. Install it first if you want to include Prophet in your experiments.
+
+```python
+from charlie.charlie_foresight.forecast_models.prophet import ProphetModel
+
+prophet_model = ProphetModel(
+    prophet_kwargs={"seasonality_mode": "additive"},
+)
+prophet_model.fit(train_df)
+prophet_pred, prophet_lo, prophet_hi = prophet_model.predict(future_df)
+
+print(prophet_pred[:3])
+```
+
+### Prophet dataframe utility
+
+```python
+from charlie.charlie_foresight.utils import to_prophet_df
+
+prophet_ready = to_prophet_df(train_df)
+print(prophet_ready.head())
+```
+
+### Forecast metric helpers
+
+```python
+from charlie.charlie_foresight.metrics import mse, rmse, mae, mape, mase
+
+y_true = [100, 102, 99, 104]
+y_pred = [101, 101, 100, 103]
+
+print("MSE:", mse(y_true, y_pred))
+print("RMSE:", rmse(y_true, y_pred))
+print("MAE:", mae(y_true, y_pred))
+print("MAPE:", mape(y_true, y_pred))
+print("MASE:", mase(y_true, y_pred))
+```
